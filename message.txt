@@ -6,7 +6,7 @@ local Settings = {
 
     -- Aimbot
     AimbotEnabled = false, -- Ativar/Desativar o Aimbot
-    AimbotKey = Enum.UserInputType.MouseButton2, -- Botão para ativar o Aimbot (Botão direito do mouse)
+    AimbotKey = Enum.UserInputType.MouseButton2, -- Botão lateral esquerdo do mouse
     AimbotSmoothness = 0.1, -- Suavidade do Aimbot (0 = instantâneo, 1 = muito lento)
     AimbotFOV = 100, -- Campo de visão do Aimbot (em graus)
     AimbotTeamCheck = true, -- Ignorar membros da mesma equipe
@@ -22,8 +22,8 @@ local Settings = {
 
 -- CONFIGURAÇÕES DE LOGIN
 local LoginSettings = {
-    Username = "wgxzs", -- Nome de usuário correto
-    Password = "ddloko00", -- Senha correta
+    Username = "d", -- Nome de usuário correto
+    Password = "d", -- Senha correta
 }
 
 -- Verifica se o jogo é Counter Blox Source 2
@@ -231,7 +231,7 @@ LoginButton.MouseButton1Click:Connect(function()
     -- Verificar credenciais
     if username == LoginSettings.Username and password == LoginSettings.Password then
         createNotification("Login bem-sucedido!", Color3.fromRGB(0, 255, 0))
-        wait(1)
+        wait(0)
         LoginFrame.Visible = false -- Oculta o formulário de login
         Frame.Visible = true
     else
@@ -414,6 +414,316 @@ ConfigButton.MouseButton1Click:Connect(function()
     ConfigPanel.Visible = not ConfigPanel.Visible
 end)
 
+-- Botão para Abrir a Segunda Interface
+local OpenSecondInterfaceButton = Instance.new("TextButton")
+OpenSecondInterfaceButton.Size = UDim2.new(0.9, 0, 0, 40)
+OpenSecondInterfaceButton.Position = UDim2.new(0.05, 0, 0.4, -45)
+OpenSecondInterfaceButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+OpenSecondInterfaceButton.Text = "Esp"
+OpenSecondInterfaceButton.Font = Enum.Font.Gotham
+OpenSecondInterfaceButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenSecondInterfaceButton.TextSize = 18
+OpenSecondInterfaceButton.AutoButtonColor = false
+OpenSecondInterfaceButton.Parent = Frame
+
+-- Efeito de hover no botão
+OpenSecondInterfaceButton.MouseEnter:Connect(function()
+    TweenService:Create(OpenSecondInterfaceButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)}):Play()
+end)
+
+OpenSecondInterfaceButton.MouseLeave:Connect(function()
+    TweenService:Create(OpenSecondInterfaceButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
+end)
+
+-- Segunda Interface
+local SecondInterface = Instance.new("Frame")
+SecondInterface.Size = UDim2.new(0, 350, 0, 450)
+SecondInterface.Position = UDim2.new(0.5, -175, 0.5, -225)
+SecondInterface.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+SecondInterface.BackgroundTransparency = 0.2
+SecondInterface.BorderSizePixel = 0
+SecondInterface.ClipsDescendants = true
+SecondInterface.Visible = false -- Inicialmente oculta
+SecondInterface.Parent = ScreenGui
+
+-- Borda arredondada para a segunda interface
+local UICornerSecondInterface = Instance.new("UICorner")
+UICornerSecondInterface.CornerRadius = UDim.new(0, 12)
+UICornerSecondInterface.Parent = SecondInterface
+
+-- Título da Segunda Interface
+local SecondInterfaceTitle = Instance.new("TextLabel")
+SecondInterfaceTitle.Size = UDim2.new(1, 0, 0, 50)
+SecondInterfaceTitle.Text = "Esp"
+SecondInterfaceTitle.Font = Enum.Font.GothamBold
+SecondInterfaceTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SecondInterfaceTitle.TextSize = 24
+SecondInterfaceTitle.BackgroundTransparency = 1
+SecondInterfaceTitle.Position = UDim2.new(0, 0, 0, 10)
+SecondInterfaceTitle.Parent = SecondInterface
+
+-- Divisor da Segunda Interface
+local SecondInterfaceDivider = Instance.new("Frame")
+SecondInterfaceDivider.Size = UDim2.new(0.9, 0, 0, 1)
+SecondInterfaceDivider.Position = UDim2.new(0.05, 0, 0, 60)
+SecondInterfaceDivider.BackgroundColor3 = Color3.fromRGB(128, 0, 128)
+SecondInterfaceDivider.BackgroundTransparency = 0.8
+SecondInterfaceDivider.BorderSizePixel = 0
+SecondInterfaceDivider.Parent = SecondInterface
+
+-- Botão para Fechar a Segunda Interface
+local CloseSecondInterfaceButton = Instance.new("TextButton")
+CloseSecondInterfaceButton.Size = UDim2.new(0.9, 0, 0, 40)
+CloseSecondInterfaceButton.Position = UDim2.new(0.05, 0, 0.8, 0)
+CloseSecondInterfaceButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50) -- Cor vermelha para indicar perigo
+CloseSecondInterfaceButton.Text = "Fechar"
+CloseSecondInterfaceButton.Font = Enum.Font.Gotham
+CloseSecondInterfaceButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseSecondInterfaceButton.TextSize = 18
+CloseSecondInterfaceButton.AutoButtonColor = false
+CloseSecondInterfaceButton.Parent = SecondInterface
+
+-- Efeito de hover no botão de fechar
+CloseSecondInterfaceButton.MouseEnter:Connect(function()
+    TweenService:Create(CloseSecondInterfaceButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 70, 70)}):Play()
+end)
+
+CloseSecondInterfaceButton.MouseLeave:Connect(function()
+    TweenService:Create(CloseSecondInterfaceButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(200, 50, 50)}):Play()
+end)
+
+-- Função para alternar a visibilidade da segunda interface
+OpenSecondInterfaceButton.MouseButton1Click:Connect(function()
+    Frame.Visible = false -- Oculta a interface principal
+    SecondInterface.Visible = true -- Mostra a segunda interface
+end)
+
+CloseSecondInterfaceButton.MouseButton1Click:Connect(function()
+    SecondInterface.Visible = false -- Oculta a segunda interface
+    Frame.Visible = true -- Mostra a interface principal
+end)
+
+-- Botão ESP (NameTag ESP)
+local ESPButton = Instance.new("TextButton")
+ESPButton.Size = UDim2.new(0.9, 0, 0, 40)
+ESPButton.Position = UDim2.new(0.05, 0, 0.3, 0)
+ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ESPButton.Text = "Ativar ESP"
+ESPButton.Font = Enum.Font.Gotham
+ESPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ESPButton.TextSize = 18
+ESPButton.AutoButtonColor = false
+ESPButton.Parent = SecondInterface
+
+-- Ícone do ESP
+local ESPIcon = Instance.new("ImageLabel")
+ESPIcon.Size = UDim2.new(0, 24, 0, 24)
+ESPIcon.Position = UDim2.new(0.05, 0, 0.5, -12)
+ESPIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de ícone
+ESPIcon.BackgroundTransparency = 1
+ESPIcon.Parent = ESPButton
+
+-- Botão para ativar/desativar o Box ESP
+local BoxESPButton = Instance.new("TextButton")
+BoxESPButton.Size = UDim2.new(0.9, 0, 0, 40)
+BoxESPButton.Position = UDim2.new(0.05, 0, 0.45, 0)
+BoxESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+BoxESPButton.Text = "Ativar Box ESP"
+BoxESPButton.Font = Enum.Font.Gotham
+BoxESPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+BoxESPButton.TextSize = 18
+BoxESPButton.AutoButtonColor = false
+BoxESPButton.Parent = SecondInterface
+
+-- Função ESP (NameTag ESP)
+local espEnabled = false
+local espNameTags = {}
+
+-- Função para criar o NameTag
+local function createESPNameTag(player)
+    if not player.Character or not player.Character:FindFirstChild("Head") then return end
+    -- Verifica se o jogador é da mesma equipe
+    if Settings.AimbotTeamCheck and player.Team == LocalPlayer.Team then
+        return
+    end
+    -- Cria um TextLabel para o NameTag
+    local nameTag = Instance.new("BillboardGui")
+    nameTag.Name = "NameTag"
+    nameTag.Size = UDim2.new(0, 20, 0, 10) -- Tamanho do NameTag
+    nameTag.StudsOffset = Vector3.new(0, 2, 0) -- Posiciona acima da cabeça
+    nameTag.AlwaysOnTop = true
+    nameTag.Adornee = player.Character.Head
+    nameTag.Parent = player.Character.Head
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Cor do texto (branco)
+    textLabel.TextStrokeTransparency = 0.5 -- Contorno do texto
+    textLabel.TextScaled = true
+    textLabel.Text = player.Name -- Exibe o nome do jogador
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.Parent = nameTag
+    -- Armazena o NameTag para remoção posterior
+    espNameTags[player] = nameTag
+end
+
+-- Função para remover o NameTag
+local function removeESPNameTag(player)
+    if espNameTags[player] then
+        espNameTags[player]:Destroy()
+        espNameTags[player] = nil
+    end
+end
+
+-- Função para ativar/desativar o ESP
+ESPButton.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    ESPButton.Text = espEnabled and "Desativar ESP" or "Ativar ESP"
+    if espEnabled then
+        print("ESP NameTag ativado!")
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                createESPNameTag(player)
+            end
+        end
+    else
+        print("ESP NameTag desativado!")
+        for player, _ in pairs(espNameTags) do
+            removeESPNameTag(player)
+        end
+    end
+end)
+
+-- Detectar quando novos jogadores entram no jogo
+Players.PlayerAdded:Connect(function(player)
+    if espEnabled and player ~= LocalPlayer then
+        createESPNameTag(player)
+    end
+end)
+
+-- Detectar quando jogadores saem do jogo
+Players.PlayerRemoving:Connect(function(player)
+    if espNameTags[player] then
+        removeESPNameTag(player)
+    end
+end)
+
+-- Variáveis globais para o Box ESP
+local boxESPEnabled = false
+local boxESPBoxes = {}
+
+-- Função para criar a caixa ao redor do jogador
+local function createBoxESP(player)
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+    -- Verifica se o jogador é da mesma equipe
+    if Settings.AimbotTeamCheck and player.Team == LocalPlayer.Team then
+        return
+    end
+    -- Cria uma nova Box para o jogador
+    local box = Instance.new("BoxHandleAdornment")
+    box.Name = "BoxESP"
+    box.Size = Vector3.new(4, 6, 4) -- Tamanho da caixa (ajuste conforme necessário)
+    box.Color3 = Color3.fromRGB(255, 255, 255) -- Cor da caixa (branca)
+    box.Transparency = 0.7 -- Transparência da caixa
+    box.ZIndex = 1
+    box.AlwaysOnTop = true
+    box.Adornee = player.Character.HumanoidRootPart
+    box.Parent = player.Character
+    -- Armazena a caixa para remoção posterior
+    boxESPBoxes[player] = box
+end
+
+-- Função para remover a caixa de um jogador
+local function removeBoxESP(player)
+    if boxESPBoxes[player] then
+        boxESPBoxes[player]:Destroy()
+        boxESPBoxes[player] = nil
+    end
+end
+
+-- Função para alternar o Box ESP
+BoxESPButton.MouseButton1Click:Connect(function()
+    boxESPEnabled = not boxESPEnabled
+    BoxESPButton.Text = boxESPEnabled and "Desativar Box ESP" or "Ativar Box ESP"
+    if boxESPEnabled then
+        print("Box ESP ativado!")
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                createBoxESP(player)
+            end
+        end
+    else
+        print("Box ESP desativado!")
+        for player, _ in pairs(boxESPBoxes) do
+            removeBoxESP(player)
+        end
+    end
+end)
+
+-- Detectar quando novos jogadores entram no jogo
+Players.PlayerAdded:Connect(function(player)
+    if boxESPEnabled and player ~= LocalPlayer then
+        createBoxESP(player)
+    end
+end)
+
+-- Detectar quando jogadores saem do jogo
+Players.PlayerRemoving:Connect(function(player)
+    if boxESPBoxes[player] then
+        removeBoxESP(player)
+    end
+end)
+
+-- Serviço UserInputService
+local UserInputService = game:GetService("UserInputService")
+
+-- Variável para armazenar a tecla de atalho
+local espKeybind = Enum.KeyCode.E -- Altere para a tecla que deseja usar
+local boxEspKeybind = Enum.KeyCode.E -- Altere para outra tecla se necessário
+
+-- Função para alternar o ESP usando a tecla
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end -- Ignora se o jogo já processou o input
+
+    -- Alternar NameTag ESP
+    if input.KeyCode == espKeybind then
+        espEnabled = not espEnabled
+        ESPButton.Text = espEnabled and "Desativar ESP" or "Ativar ESP"
+        if espEnabled then
+            print("ESP NameTag ativado!")
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    createESPNameTag(player)
+                end
+            end
+        else
+            print("ESP NameTag desativado!")
+            for player, _ in pairs(espNameTags) do
+                removeESPNameTag(player)
+            end
+        end
+    end
+
+    -- Alternar Box ESP
+    if input.KeyCode == boxEspKeybind then
+        boxESPEnabled = not boxESPEnabled
+        BoxESPButton.Text = boxESPEnabled and "Desativar Box ESP" or "Ativar Box ESP"
+        if boxESPEnabled then
+            print("Box ESP ativado!")
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    createBoxESP(player)
+                end
+            end
+        else
+            print("Box ESP desativado!")
+            for player, _ in pairs(boxESPBoxes) do
+                removeBoxESP(player)
+            end
+        end
+    end
+end)
+
 -- Botão Aimbot
 local AimbotButton = Instance.new("TextButton")
 AimbotButton.Size = UDim2.new(0.8, 0, 0, 40)
@@ -461,25 +771,6 @@ SilentAimButton.MouseButton1Click:Connect(function()
     print("Silent Aim " .. (Settings.SilentAimEnabled and "ativado!" or "desativado!"))
 end)
 
--- Botão ESP
-local ESPButton = Instance.new("TextButton")
-ESPButton.Size = UDim2.new(0.9, 0, 0, 40)
-ESPButton.Position = UDim2.new(0.05, 0, 0.4, 0)
-ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-ESPButton.Text = "Ativar ESP"
-ESPButton.Font = Enum.Font.Gotham
-ESPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ESPButton.TextSize = 18
-ESPButton.AutoButtonColor = false
-ESPButton.Parent = Frame
-
--- Ícone do ESP
-local ESPIcon = Instance.new("ImageLabel")
-ESPIcon.Size = UDim2.new(0, 24, 0, 24)
-ESPIcon.Position = UDim2.new(0.05, 0, 0.5, -12)
-ESPIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de ícone
-ESPIcon.BackgroundTransparency = 1
-ESPIcon.Parent = ESPButton
 
 -- Botão Destruir
 local DestroyButton = Instance.new("TextButton")
@@ -529,6 +820,7 @@ applyRoundedCorners(AimbotButton)
 applyRoundedCorners(SilentAimButton)
 applyRoundedCorners(ESPButton)
 applyRoundedCorners(DestroyButton)
+applyRoundedCorners(OpenSecondInterfaceButton)
 
 -- Função para verificar se um jogador é visível
 local function isPlayerVisible(player)
@@ -684,81 +976,6 @@ end
 -- Botão Aimbot
 AimbotButton.MouseButton1Click:Connect(toggleAimbot)
 
--- Função ESP (NameTag ESP)
-local espEnabled = false
-local espNameTags = {}
-
-local function createESPNameTag(player)
-    if not player.Character or not player.Character:FindFirstChild("Head") then return end
-
-    -- Verifica se o jogador é da mesma equipe
-    if Settings.AimbotTeamCheck and player.Team == LocalPlayer.Team then
-        return
-    end
-
-    -- Cria um TextLabel para o NameTag
-    local nameTag = Instance.new("BillboardGui")
-    nameTag.Name = "NameTag"
-    nameTag.Size = UDim2.new(0, 20, 0, 10) -- Tamanho do NameTag
-    nameTag.StudsOffset = Vector3.new(0, 2, 0) -- Posiciona acima da cabeça
-    nameTag.AlwaysOnTop = true
-    nameTag.Adornee = player.Character.Head
-    nameTag.Parent = player.Character.Head
-
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(1, 0, 1, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.TextColor3 = Color3.fromRGB(165, 42, 42) -- Cor do texto (branco)
-    textLabel.TextStrokeTransparency = 0.5 -- Contorno do texto
-    textLabel.TextScaled = true
-    textLabel.Text = player.Name -- Exibe o nome do jogador
-    textLabel.Font = Enum.Font.GothamBold
-    textLabel.Parent = nameTag
-
-    -- Armazena o NameTag para remoção posterior
-    espNameTags[player] = nameTag
-end
-
-local function removeESPNameTag(player)
-    if espNameTags[player] then
-        espNameTags[player]:Destroy()
-        espNameTags[player] = nil
-    end
-end
-
-ESPButton.MouseButton1Click:Connect(function()
-    espEnabled = not espEnabled
-    ESPButton.Text = espEnabled and "Desativar ESP" or "Ativar ESP"
-    if espEnabled then
-        print("ESP NameTag ativado!")
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then
-                createESPNameTag(player)
-            end
-        end
-    else
-        print("ESP NameTag desativado!")
-        for player, _ in pairs(espNameTags) do
-            removeESPNameTag(player)
-        end
-    end
-end)
-
--- Detectar quando novos jogadores entram no jogo
-Players.PlayerAdded:Connect(function(player)
-    if espEnabled and player ~= LocalPlayer then
-        createESPNameTag(player)
-    end
-end)
-
--- Detectar quando jogadores saem do jogo
-Players.PlayerRemoving:Connect(function(player)
-    if espNameTags[player] then
-        removeESPNameTag(player)
-    end
-end)
-
-
 -- Função para destruir o script e limpar rastros
 local function destroyScript()
     -- Desativa todas as funcionalidades
@@ -774,6 +991,7 @@ local function destroyScript()
     -- Destrói a interface gráfica
     ScreenGui:Destroy()
     FOVCircleGui:Destroy()
+    BoxESP:Destroy()
 
     -- Limpa qualquer outro rastro do script
     print("Script destruído e todos os rastros foram limpos.")
