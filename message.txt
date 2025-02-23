@@ -180,11 +180,11 @@ LoginButton.MouseLeave:Connect(function()
 end)
 
 -- Função para criar notificações
-local function createNotification(message, color)
+    local function createNotification(message, color)
     -- Cria o frame da notificação
     local Notification = Instance.new("Frame")
-    Notification.Size = UDim2.new(0, 250, 0, 50)
-    Notification.Position = UDim2.new(1, -270, 1, -70) -- Canto inferior direito
+    Notification.Size = UDim2.new(0, 300, 0, 70) -- Tamanho maior para a notificação
+    Notification.Position = UDim2.new(1, -320, 1, -90) -- Canto inferior direito
     Notification.BackgroundColor3 = color or Color3.fromRGB(255, 0, 0)
     Notification.BorderSizePixel = 0
     Notification.Parent = ScreenGui
@@ -198,21 +198,21 @@ local function createNotification(message, color)
     local NotificationLabel = Instance.new("TextLabel")
     NotificationLabel.Size = UDim2.new(1, 0, 1, 0)
     NotificationLabel.Text = message
-    NotificationLabel.Font = Enum.Font.Gotham
+    NotificationLabel.Font = Enum.Font.GothamBold
     NotificationLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    NotificationLabel.TextSize = 14
+    NotificationLabel.TextSize = 24 -- Tamanho maior para o texto
     NotificationLabel.BackgroundTransparency = 1
     NotificationLabel.TextXAlignment = Enum.TextXAlignment.Center
     NotificationLabel.TextYAlignment = Enum.TextYAlignment.Center
     NotificationLabel.Parent = Notification
 
     -- Animação de entrada
-    Notification.Position = UDim2.new(1, 0, 1, -70) -- Fora da tela
-    TweenService:Create(Notification, TweenInfo.new(0.3), {Position = UDim2.new(1, -270, 1, -70)}):Play()
+    Notification.Position = UDim2.new(1, 0, 1, -90) -- Fora da tela
+    TweenService:Create(Notification, TweenInfo.new(0.3), {Position = UDim2.new(1, -320, 1, -90)}):Play()
 
     -- Desaparecer após 3 segundos
     wait(3)
-    TweenService:Create(Notification, TweenInfo.new(0.3), {Position = UDim2.new(1, 0, 1, -70)}):Play()
+    TweenService:Create(Notification, TweenInfo.new(0.3), {Position = UDim2.new(1, 0, 1, -90)}):Play()
     wait(0.3)
     Notification:Destroy()
 end
@@ -233,9 +233,9 @@ LoginButton.MouseButton1Click:Connect(function()
         createNotification("Login bem-sucedido!", Color3.fromRGB(0, 255, 0))
         wait(1)
         LoginFrame.Visible = false -- Oculta o formulário de login
-         Frame.Visible = true
+        Frame.Visible = true
     else
-        createNotification("Credenciais inválidas. Tente novamente.", Color3.fromRGB(255, 0, 0))
+        createNotification("Credenciais inválidas.", Color3.fromRGB(255, 0, 0))
     end
 end)
 -- Botões Principais
@@ -275,7 +275,7 @@ ConfigButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 ConfigButton.Text = "+"
 ConfigButton.Font = Enum.Font.GothamBold
 ConfigButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ConfigButton.TextSize = 24
+ConfigButton.TextSize = 10
 ConfigButton.AutoButtonColor = false
 ConfigButton.Parent = Frame
 
@@ -481,26 +481,6 @@ ESPIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de 
 ESPIcon.BackgroundTransparency = 1
 ESPIcon.Parent = ESPButton
 
--- Botão Hitbox Expansion
-local HitboxButton = Instance.new("TextButton")
-HitboxButton.Size = UDim2.new(0.9, 0, 0, 40)
-HitboxButton.Position = UDim2.new(0.05, 0, 0.6, 0)
-HitboxButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-HitboxButton.Text = "Ativar Hitbox Expansion"
-HitboxButton.Font = Enum.Font.Gotham
-HitboxButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-HitboxButton.TextSize = 18
-HitboxButton.AutoButtonColor = false
-HitboxButton.Parent = Frame
-
--- Ícone do Hitbox Expansion
-local HitboxIcon = Instance.new("ImageLabel")
-HitboxIcon.Size = UDim2.new(0, 24, 0, 24)
-HitboxIcon.Position = UDim2.new(0.05, 0, 0.5, -12)
-HitboxIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de ícone
-HitboxIcon.BackgroundTransparency = 1
-HitboxIcon.Parent = HitboxButton
-
 -- Botão Destruir
 local DestroyButton = Instance.new("TextButton")
 DestroyButton.Size = UDim2.new(0.9, 0, 0, 40)
@@ -530,13 +510,25 @@ end
 
 createHoverEffect(AimbotButton)
 createHoverEffect(ESPButton)
-createHoverEffect(HitboxButton)
 createHoverEffect(DestroyButton)
 
 -- Função para calcular a distância entre dois pontos
 local function getDistance(pointA, pointB)
     return (pointA - pointB).Magnitude
 end
+
+-- Arredondamento dos botões
+local function applyRoundedCorners(button)
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 8) -- Define o raio da borda
+    UICorner.Parent = button
+end
+
+-- Aplicar arredondamento nos botões principais
+applyRoundedCorners(AimbotButton)
+applyRoundedCorners(SilentAimButton)
+applyRoundedCorners(ESPButton)
+applyRoundedCorners(DestroyButton)
 
 -- Função para verificar se um jogador é visível
 local function isPlayerVisible(player)
@@ -766,72 +758,17 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
--- Função Hitbox Expansion
-local hitboxEnabled = false
-local hitboxExpanders = {}
-
-local function createHitboxExpander(player)
-    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
-
-    local RootPart = player.Character.HumanoidRootPart
-    local HitboxExpander = Instance.new("Part")
-    HitboxExpander.Name = "HitboxExpander"
-    HitboxExpander.Size = Vector3.new(10, 10, 10) -- Tamanho da hitbox expandida
-    HitboxExpander.Color = Color3.fromRGB(255, 0, 0)
-    HitboxExpander.Transparency = 0.5
-    HitboxExpander.CanCollide = true
-    HitboxExpander.Anchored = false
-    HitboxExpander.Massless = true
-    HitboxExpander.Parent = player.Character
-
-    local Weld = Instance.new("WeldConstraint")
-    Weld.Part0 = RootPart
-    Weld.Part1 = HitboxExpander
-    Weld.Parent = HitboxExpander
-
-    hitboxExpanders[player] = HitboxExpander
-end
-
-local function removeHitboxExpander(player)
-    if hitboxExpanders[player] then
-        hitboxExpanders[player]:Destroy()
-        hitboxExpanders[player] = nil
-    end
-end
-
-HitboxButton.MouseButton1Click:Connect(function()
-    hitboxEnabled = not hitboxEnabled
-    HitboxButton.Text = hitboxEnabled and "Desativar Hitbox Expansion" or "Ativar Hitbox Expansion"
-    if hitboxEnabled then
-        print("Hitbox Expansion ativado!")
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then
-                createHitboxExpander(player)
-            end
-        end
-    else
-        print("Hitbox Expansion desativado!")
-        for player, _ in pairs(hitboxExpanders) do
-            removeHitboxExpander(player)
-        end
-    end
-end)
 
 -- Função para destruir o script e limpar rastros
 local function destroyScript()
     -- Desativa todas as funcionalidades
     Settings.AimbotEnabled = false
     espEnabled = false
-    hitboxEnabled = false
+    silentaimEnabled = false
 
     -- Remove todos os ESPs
     for player, _ in pairs(espNameTags) do
         removeESPNameTag(player)
-    end
-
-    -- Remove todas as hitboxes expandidas
-    for player, _ in pairs(hitboxExpanders) do
-        removeHitboxExpander(player)
     end
 
     -- Destrói a interface gráfica
