@@ -1,0 +1,565 @@
+-- CONFIGURAÇÕES PERSONALIZÁVEIS
+local Settings = {
+    -- Geral
+    GameId = 5671776994, -- ID do jogo (Counter Blox Source 2)
+
+    -- Aimbot
+    AimbotEnabled = false, -- Ativar/desativar o Aimbot
+    AimbotKey = Enum.UserInputType.MouseButton2, -- Botão para ativar o Aimbot (Botão direito do mouse)
+    AimbotSmoothness = 0.2, -- Suavidade do Aimbot (0 = instantâneo, 1 = muito lento)
+    AimbotFOV = 100, -- Campo de visão do Aimbot (em graus)
+    AimbotTeamCheck = true, -- Ignorar membros da mesma equipe
+
+    -- ESP (Box ESP)
+    EspEnabled = false,
+    EspColor = Color3.new(1, 0, 0), -- Cor do ESP (vermelho por padrão)
+    EspTransparency = 0.5, -- Transparência do ESP (0 = opaco, 1 = invisível)
+    EspSizeOffset = Vector3.new(1, 1, 1), -- Ajuste no tamanho da caixa
+    EspShowHead = true, -- Mostrar ESP na cabeça
+    EspShowTorso = true, -- Mostrar ESP no torso
+    EspShowLimbs = false, -- Mostrar ESP nos membros
+
+    -- Hitbox Expansion
+    HitboxExpansionEnabled = false,
+    HitboxSize = Vector3.new(20, 20, 20), -- Novo tamanho da hitbox
+    HitboxColor = BrickColor.new("Bright red"), -- Cor da hitbox expandida
+    HitboxTransparency = 0.5, -- Transparência da hitbox expandida
+
+    -- Interface Gráfica
+    GuiEnabled = true, -- Ativar/desativar a interface gráfica
+    GuiKeyToToggle = Enum.KeyCode.Zero, -- Tecla para ativar/desativar a GUI
+}
+
+-- Verifica se o jogo é Counter Blox Source 2
+local function isCounterBloxSource2()
+    return game.PlaceId == Settings.GameId
+end
+
+if not isCounterBloxSource2() then
+    warn("Este script só é compatível com Counter Blox Source 2.")
+    return
+end
+
+-- Serviços
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+-- Variáveis
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local Camera = workspace.CurrentCamera
+
+-- Criação da Interface Gráfica
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Wgxzs Team"
+ScreenGui.Parent = game.CoreGui
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 350, 0, 450) -- Aumentei o tamanho para acomodar a SeekBar
+Frame.Position = UDim2.new(0.5, -175, 0.5, -225)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Fundo preto
+Frame.BackgroundTransparency = 0.2
+Frame.BorderSizePixel = 0
+Frame.ClipsDescendants = true
+Frame.Parent = ScreenGui
+
+-- Borda arredondada
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = Frame
+
+-- Título
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Text = "Mata Matheus"
+Title.Font = Enum.Font.GothamBold
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 24
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 0, 0, 10)
+Title.Parent = Frame
+
+-- Divisor
+local Divider = Instance.new("Frame")
+Divider.Size = UDim2.new(0.9, 0, 0, 1)
+Divider.Position = UDim2.new(0.05, 0, 0, 60)
+Divider.BackgroundColor3 = Color3.fromRGB(128, 0, 128) -- Roxo
+Divider.BackgroundTransparency = 0.8
+Divider.BorderSizePixel = 0
+Divider.Parent = Frame
+
+-- Botão Aimbot
+local AimbotButton = Instance.new("TextButton")
+AimbotButton.Size = UDim2.new(0.9, 0, 0, 40)
+AimbotButton.Position = UDim2.new(0.05, 0, 0.2, 0)
+AimbotButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+AimbotButton.Text = "Ativar Aimbot"
+AimbotButton.Font = Enum.Font.Gotham
+AimbotButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimbotButton.TextSize = 18
+AimbotButton.AutoButtonColor = false
+AimbotButton.Parent = Frame
+
+-- Ícone do Aimbot
+local AimbotIcon = Instance.new("ImageLabel")
+AimbotIcon.Size = UDim2.new(0, 24, 0, 24)
+AimbotIcon.Position = UDim2.new(0.05, 0, 0.5, -12)
+AimbotIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de ícone
+AimbotIcon.BackgroundTransparency = 1
+AimbotIcon.Parent = AimbotButton
+
+-- SeekBar para ajustar o FOV do Aimbot
+local AimbotFOVSeekBar = Instance.new("Frame")
+AimbotFOVSeekBar.Size = UDim2.new(0.9, 0, 0, 10)
+AimbotFOVSeekBar.Position = UDim2.new(0.05, 0, 0.3, 0)
+AimbotFOVSeekBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+AimbotFOVSeekBar.BorderSizePixel = 0
+AimbotFOVSeekBar.Parent = Frame
+
+local AimbotFOVSeekBarFill = Instance.new("Frame")
+AimbotFOVSeekBarFill.Size = UDim2.new(0, 0, 1, 0)
+AimbotFOVSeekBarFill.BackgroundColor3 = Color3.fromRGB(128, 0, 128) -- Roxo
+AimbotFOVSeekBarFill.BorderSizePixel = 0
+AimbotFOVSeekBarFill.Parent = AimbotFOVSeekBar
+
+local AimbotFOVSeekBarThumb = Instance.new("TextButton")
+AimbotFOVSeekBarThumb.Size = UDim2.new(0, 20, 0, 20)
+AimbotFOVSeekBarThumb.BackgroundColor3 = Color3.fromRGB(128, 0, 128) -- Roxo
+AimbotFOVSeekBarThumb.BorderSizePixel = 0
+AimbotFOVSeekBarThumb.Text = ""
+AimbotFOVSeekBarThumb.Parent = AimbotFOVSeekBar
+
+-- Criação de uma nova ScreenGui para o Círculo de FOV
+local FOVCircleGui = Instance.new("ScreenGui")
+FOVCircleGui.Name = "FOVCircleGui"
+FOVCircleGui.Parent = game.CoreGui
+
+-- Criação do Círculo de FOV
+local FOVCircle = Instance.new("Frame")
+FOVCircle.Size = UDim2.new(0, Settings.AimbotFOV * 2, 0, Settings.AimbotFOV * 2)
+FOVCircle.AnchorPoint = Vector2.new(0.5, 0.5) -- Centraliza o círculo
+FOVCircle.Position = UDim2.new(0.5, 0, 0.5, 0) -- Posiciona no centro da tela
+FOVCircle.BackgroundTransparency = 1
+FOVCircle.BorderSizePixel = 0
+FOVCircle.Parent = FOVCircleGui
+
+local UICornerCircle = Instance.new("UICorner")
+UICornerCircle.CornerRadius = UDim.new(1, 0)
+UICornerCircle.Parent = FOVCircle
+
+local FOVCircleBorder = Instance.new("UIStroke")
+FOVCircleBorder.Color = Color3.fromRGB(128, 0, 128) -- Roxo
+FOVCircleBorder.Thickness = 2
+FOVCircleBorder.Parent = FOVCircle
+
+-- Função para atualizar o FOV do Aimbot e o círculo de FOV
+local function updateAimbotFOV(value)
+    Settings.AimbotFOV = value
+    AimbotFOVSeekBarFill.Size = UDim2.new(value / 360, 0, 1, 0)
+    AimbotFOVSeekBarThumb.Position = UDim2.new(value / 360, -10, 0.5, -10)
+    print("FOV do Aimbot ajustado para: " .. tostring(value))
+
+    -- Atualiza o círculo de FOV
+    FOVCircle.Size = UDim2.new(0, value * 2, 0, value * 2)
+end
+
+-- Inicializa o FOV
+updateAimbotFOV(Settings.AimbotFOV)
+
+-- Função para ajustar o FOV com a SeekBar
+AimbotFOVSeekBarThumb.MouseButton1Down:Connect(function()
+    local connection
+    connection = RunService.RenderStepped:Connect(function()
+        local mouse = Players.LocalPlayer:GetMouse()
+        local x = math.clamp(mouse.X - AimbotFOVSeekBar.AbsolutePosition.X, 0, AimbotFOVSeekBar.AbsoluteSize.X)
+        local value = (x / AimbotFOVSeekBar.AbsoluteSize.X) * 360
+        updateAimbotFOV(value)
+    end)
+
+    local function disconnect()
+        connection:Disconnect()
+    end
+
+    AimbotFOVSeekBarThumb.MouseButton1Up:Connect(disconnect)
+    AimbotFOVSeekBarThumb.MouseLeave:Connect(disconnect)
+end)
+
+-- Botão ESP
+local ESPButton = Instance.new("TextButton")
+ESPButton.Size = UDim2.new(0.9, 0, 0, 40)
+ESPButton.Position = UDim2.new(0.05, 0, 0.4, 0)
+ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ESPButton.Text = "Ativar ESP"
+ESPButton.Font = Enum.Font.Gotham
+ESPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ESPButton.TextSize = 18
+ESPButton.AutoButtonColor = false
+ESPButton.Parent = Frame
+
+-- Ícone do ESP
+local ESPIcon = Instance.new("ImageLabel")
+ESPIcon.Size = UDim2.new(0, 24, 0, 24)
+ESPIcon.Position = UDim2.new(0.05, 0, 0.5, -12)
+ESPIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de ícone
+ESPIcon.BackgroundTransparency = 1
+ESPIcon.Parent = ESPButton
+
+-- Botão Hitbox Expansion
+local HitboxButton = Instance.new("TextButton")
+HitboxButton.Size = UDim2.new(0.9, 0, 0, 40)
+HitboxButton.Position = UDim2.new(0.05, 0, 0.6, 0)
+HitboxButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+HitboxButton.Text = "Ativar Hitbox Expansion"
+HitboxButton.Font = Enum.Font.Gotham
+HitboxButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+HitboxButton.TextSize = 18
+HitboxButton.AutoButtonColor = false
+HitboxButton.Parent = Frame
+
+-- Ícone do Hitbox Expansion
+local HitboxIcon = Instance.new("ImageLabel")
+HitboxIcon.Size = UDim2.new(0, 24, 0, 24)
+HitboxIcon.Position = UDim2.new(0.05, 0, 0.5, -12)
+HitboxIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de ícone
+HitboxIcon.BackgroundTransparency = 1
+HitboxIcon.Parent = HitboxButton
+
+-- Botão Destruir
+local DestroyButton = Instance.new("TextButton")
+DestroyButton.Size = UDim2.new(0.9, 0, 0, 40)
+DestroyButton.Position = UDim2.new(0.05, 0, 0.8, 0)
+DestroyButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50) -- Cor vermelha para indicar perigo
+DestroyButton.Text = "Destruir"
+DestroyButton.Font = Enum.Font.Gotham
+DestroyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DestroyButton.TextSize = 18
+DestroyButton.AutoButtonColor = false
+DestroyButton.Parent = Frame
+
+-- Ícone do Botão Destruir
+local DestroyIcon = Instance.new("ImageLabel")
+DestroyIcon.Size = UDim2.new(0, 24, 0, 24)
+DestroyIcon.Position = UDim2.new(0.05, 0, 0.5, -12)
+DestroyIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de ícone
+DestroyIcon.BackgroundTransparency = 1
+DestroyIcon.Parent = DestroyButton
+
+-- Efeito de hover nos botões
+local function createHoverEffect(button)
+    button.MouseEnter:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)}):Play()
+    end)
+
+    button.MouseLeave:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
+    end)
+end
+
+createHoverEffect(AimbotButton)
+createHoverEffect(ESPButton)
+createHoverEffect(HitboxButton)
+createHoverEffect(DestroyButton)
+
+-- Função para calcular a distância entre dois pontos
+local function getDistance(pointA, pointB)
+    return (pointA - pointB).Magnitude
+end
+
+-- Função para verificar se um jogador é visível
+local function isPlayerVisible(player)
+    if not player.Character or not player.Character:FindFirstChild("Head") then
+        return false
+    end
+
+    local headPosition = player.Character.Head.Position
+    local cameraPosition = Camera.CFrame.Position
+    local direction = (headPosition - cameraPosition).Unit
+
+    -- Verifica se há obstáculos entre a câmera e o jogador
+    local ray = Ray.new(cameraPosition, direction * 1000)
+    local hit, position = workspace:FindPartOnRay(ray, LocalPlayer.Character)
+
+    if hit and hit:IsDescendantOf(player.Character) then
+        return true
+    end
+
+    return false
+end
+
+-- Função para encontrar o jogador mais próximo dentro do FOV
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local closestDistance = Settings.AimbotFOV
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            -- Verifica se o jogador é da mesma equipe
+            if Settings.AimbotTeamCheck and player.Team == LocalPlayer.Team then
+                continue
+            end
+
+            -- Verifica se o jogador está visível
+            if not isPlayerVisible(player) then
+                continue
+            end
+
+            -- Calcula a distância entre o jogador e o centro da tela
+            local headPosition = player.Character.Head.Position
+            local screenPosition, onScreen = Camera:WorldToViewportPoint(headPosition)
+
+            if onScreen then
+                local distance = getDistance(Vector2.new(screenPosition.X, screenPosition.Y), Vector2.new(Mouse.X, Mouse.Y))
+
+                if distance < closestDistance then
+                    closestPlayer = player
+                    closestDistance = distance
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+-- Função para ajustar a mira suavemente
+local function aimAt(target)
+    if not target or not target.Character or not target.Character:FindFirstChild("Head") then
+        return
+    end
+
+    local headPosition = target.Character.Head.Position
+    local cameraPosition = Camera.CFrame.Position
+    local direction = (headPosition - cameraPosition).Unit
+
+    -- Suaviza o movimento da mira
+    local currentLook = Camera.CFrame.LookVector
+    local newLook = currentLook:Lerp(direction, Settings.AimbotSmoothness)
+
+    -- Ajusta a mira
+    Camera.CFrame = CFrame.new(cameraPosition, cameraPosition + newLook)
+end
+
+-- Loop principal do Aimbot
+RunService.RenderStepped:Connect(function()
+    if Settings.AimbotEnabled and UserInputService:IsMouseButtonPressed(Settings.AimbotKey) then
+        local closestPlayer = getClosestPlayer()
+
+        if closestPlayer then
+            aimAt(closestPlayer)
+        end
+    end
+end)
+
+-- Função para ativar/desativar o Aimbot
+local function toggleAimbot()
+    Settings.AimbotEnabled = not Settings.AimbotEnabled
+    AimbotButton.Text = Settings.AimbotEnabled and "Desativar Aimbot" or "Ativar Aimbot"
+    print("Aimbot " .. (Settings.AimbotEnabled and "ativado!" or "desativado!"))
+end
+
+-- Botão Aimbot
+AimbotButton.MouseButton1Click:Connect(toggleAimbot)
+
+-- Função ESP (Box ESP) - Afeta apenas os outros jogadores
+local espEnabled = Settings.EspEnabled
+local espBoxes = {}
+
+local function createESPBox(player)
+    if not player.Character then return end
+
+    local boxes = {}
+    if Settings.EspShowHead and player.Character:FindFirstChild("Head") then
+        local box = Instance.new("BoxHandleAdornment")
+        box.Adornee = player.Character.Head
+        box.Size = player.Character.Head.Size + Settings.EspSizeOffset
+        box.Color3 = Settings.EspColor
+        box.Transparency = Settings.EspTransparency
+        box.AlwaysOnTop = true
+        box.ZIndex = 5
+        box.Parent = player.Character.Head
+        table.insert(boxes, box)
+    end
+
+    if Settings.EspShowTorso and player.Character:FindFirstChild("Torso") then
+        local box = Instance.new("BoxHandleAdornment")
+        box.Adornee = player.Character.Torso
+        box.Size = player.Character.Torso.Size + Settings.EspSizeOffset
+        box.Color3 = Settings.EspColor
+        box.Transparency = Settings.EspTransparency
+        box.AlwaysOnTop = true
+        box.ZIndex = 5
+        box.Parent = player.Character.Torso
+        table.insert(boxes, box)
+    end
+
+    if Settings.EspShowLimbs then
+        for _, limb in pairs(player.Character:GetChildren()) do
+            if limb:IsA("BasePart") and (limb.Name == "Left Arm" or limb.Name == "Right Arm" or limb.Name == "Left Leg" or limb.Name == "Right Leg") then
+                local box = Instance.new("BoxHandleAdornment")
+                box.Adornee = limb
+                box.Size = limb.Size + Settings.EspSizeOffset
+                box.Color3 = Settings.EspColor
+                box.Transparency = Settings.EspTransparency
+                box.AlwaysOnTop = true
+                box.ZIndex = 5
+                box.Parent = limb
+                table.insert(boxes, box)
+            end
+        end
+    end
+
+    espBoxes[player] = boxes
+end
+
+local function removeESPBox(player)
+    if espBoxes[player] then
+        for _, box in pairs(espBoxes[player]) do
+            box:Destroy()
+        end
+        espBoxes[player] = nil
+    end
+end
+
+ESPButton.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    ESPButton.Text = espEnabled and "Desativar ESP" or "Ativar ESP"
+    if espEnabled then
+        print("ESP ativado!")
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                createESPBox(player)
+            end
+        end
+    else
+        print("ESP desativado!")
+        for player, _ in pairs(espBoxes) do
+            removeESPBox(player)
+        end
+    end
+end)
+
+-- Função Hitbox Expansion
+local hitboxEnabled = Settings.HitboxExpansionEnabled
+local hitboxExpanders = {}
+
+local function createHitboxExpander(player)
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+
+    local RootPart = player.Character.HumanoidRootPart
+    local HitboxExpander = Instance.new("Part")
+    HitboxExpander.Name = "HitboxExpander"
+    HitboxExpander.Size = Settings.HitboxSize
+    HitboxExpander.Color = Settings.HitboxColor.Color
+    HitboxExpander.Transparency = Settings.HitboxTransparency
+    HitboxExpander.CanCollide = true
+    HitboxExpander.Anchored = false
+    HitboxExpander.Massless = true
+    HitboxExpander.Parent = player.Character
+
+    local Weld = Instance.new("WeldConstraint")
+    Weld.Part0 = RootPart
+    Weld.Part1 = HitboxExpander
+    Weld.Parent = HitboxExpander
+
+    hitboxExpanders[player] = HitboxExpander
+end
+
+local function removeHitboxExpander(player)
+    if hitboxExpanders[player] then
+        hitboxExpanders[player]:Destroy()
+        hitboxExpanders[player] = nil
+    end
+end
+
+HitboxButton.MouseButton1Click:Connect(function()
+    hitboxEnabled = not hitboxEnabled
+    HitboxButton.Text = hitboxEnabled and "Desativar Hitbox Expansion" or "Ativar Hitbox Expansion"
+    if hitboxEnabled then
+        print("Hitbox Expansion ativado!")
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                createHitboxExpander(player)
+            end
+        end
+    else
+        print("Hitbox Expansion desativado!")
+        for player, _ in pairs(hitboxExpanders) do
+            removeHitboxExpander(player)
+        end
+    end
+end)
+
+-- Função para destruir o script e limpar rastros
+local function destroyScript()
+    -- Desativa todas as funcionalidades
+    Settings.AimbotEnabled = false
+    espEnabled = false
+    hitboxEnabled = false
+
+    -- Remove todos os ESPs
+    for player, _ in pairs(espBoxes) do
+        removeESPBox(player)
+    end
+
+    -- Remove todas as hitboxes expandidas
+    for player, _ in pairs(hitboxExpanders) do
+        removeHitboxExpander(player)
+    end
+
+    -- Destrói a interface gráfica
+    ScreenGui:Destroy()
+    FOVCircleGui:Destroy()
+
+    -- Limpa qualquer outro rastro do script
+    print("Script destruído e todos os rastros foram limpos.")
+end
+
+-- Botão Destruir
+DestroyButton.MouseButton1Click:Connect(destroyScript)
+
+-- Função para mover a interface
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- Função para fechar a interface com a tecla configurável
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Settings.GuiKeyToToggle and not gameProcessed then
+        ScreenGui.Enabled = not ScreenGui.Enabled
+        print("Interface " .. (ScreenGui.Enabled and "reaberta." or "fechada."))
+    end
+end)
