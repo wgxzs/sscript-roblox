@@ -4,26 +4,11 @@ local Settings = {
     GameId = 5671776994, -- ID do jogo (Counter Blox Source 2)
 
     -- Aimbot
-    AimbotEnabled = false, -- Ativar/desativar o Aimbot
+    AimbotEnabled = false, -- Ativar/Desativar o Aimbot
     AimbotKey = Enum.UserInputType.MouseButton2, -- Botão para ativar o Aimbot (Botão direito do mouse)
     AimbotSmoothness = 0.1, -- Suavidade do Aimbot (0 = instantâneo, 1 = muito lento)
     AimbotFOV = 100, -- Campo de visão do Aimbot (em graus)
     AimbotTeamCheck = true, -- Ignorar membros da mesma equipe
-
-    -- ESP (Box ESP)
-    EspEnabled = false,
-    EspColor = Color3.new(1, 0, 0), -- Cor do ESP (vermelho por padrão)
-    EspTransparency = 0.5, -- Transparência do ESP (0 = opaco, 1 = invisível)
-    EspSizeOffset = Vector3.new(1, 1, 1), -- Ajuste no tamanho da caixa
-    EspShowHead = true, -- Mostrar ESP na cabeça
-    EspShowTorso = true, -- Mostrar ESP no torso
-    EspShowLimbs = false, -- Mostrar ESP nos membros
-
-    -- Hitbox Expansion
-    HitboxExpansionEnabled = false,
-    HitboxSize = Vector3.new(20, 20, 20), -- Novo tamanho da hitbox
-    HitboxColor = BrickColor.new("Bright red"), -- Cor da hitbox expandida
-    HitboxTransparency = 0.5, -- Transparência da hitbox expandida
 
     -- Interface Gráfica
     GuiEnabled = true, -- Ativar/desativar a interface gráfica
@@ -90,9 +75,156 @@ Divider.BackgroundTransparency = 0.8
 Divider.BorderSizePixel = 0
 Divider.Parent = Frame
 
+-- Botão "+"
+local ConfigButton = Instance.new("TextButton")
+ConfigButton.Size = UDim2.new(0, 35, 0, 39) -- Tamanho do botão
+ConfigButton.Position = UDim2.new(0.9, -9, 0.2, 1) -- Posicionado no canto superior direito
+ConfigButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ConfigButton.Text = "+"
+ConfigButton.Font = Enum.Font.GothamBold
+ConfigButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ConfigButton.TextSize = 24
+ConfigButton.AutoButtonColor = false
+ConfigButton.Parent = Frame
+
+-- Aba de Configuração (inicialmente oculta)
+local ConfigPanel = Instance.new("Frame")
+ConfigPanel.Size = UDim2.new(0, 300, 0, 300)
+ConfigPanel.Position = UDim2.new(0.5, -150, 0.5, -150)
+ConfigPanel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ConfigPanel.BackgroundTransparency = 0.2
+ConfigPanel.BorderSizePixel = 0
+ConfigPanel.Visible = false
+ConfigPanel.Parent = ScreenGui
+
+-- Borda arredondada para o painel de configuração
+local UICornerConfig = Instance.new("UICorner")
+UICornerConfig.CornerRadius = UDim.new(0, 12)
+UICornerConfig.Parent = ConfigPanel
+
+-- Título da aba de configuração
+local ConfigTitle = Instance.new("TextLabel")
+ConfigTitle.Size = UDim2.new(1, 0, 0, 40)
+ConfigTitle.Text = "Configurações do Aimbot"
+ConfigTitle.Font = Enum.Font.GothamBold
+ConfigTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+ConfigTitle.TextSize = 18
+ConfigTitle.BackgroundTransparency = 1
+ConfigTitle.Position = UDim2.new(0, 0, 0, 10)
+ConfigTitle.Parent = ConfigPanel
+
+-- Slider para ajustar a Suavidade do Aimbot
+local SmoothnessLabel = Instance.new("TextLabel")
+SmoothnessLabel.Size = UDim2.new(1, 0, 0, 30)
+SmoothnessLabel.Position = UDim2.new(0, 10, 0, 60)
+SmoothnessLabel.Text = "Suavidade: " .. tostring(Settings.AimbotSmoothness)
+SmoothnessLabel.Font = Enum.Font.Gotham
+SmoothnessLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SmoothnessLabel.TextSize = 16
+SmoothnessLabel.BackgroundTransparency = 1
+SmoothnessLabel.Parent = ConfigPanel
+
+local SmoothnessSlider = Instance.new("Frame")
+SmoothnessSlider.Size = UDim2.new(1, -20, 0, 10)
+SmoothnessSlider.Position = UDim2.new(0, 10, 0, 90)
+SmoothnessSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SmoothnessSlider.BorderSizePixel = 0
+SmoothnessSlider.Parent = ConfigPanel
+
+local SmoothnessFill = Instance.new("Frame")
+SmoothnessFill.Size = UDim2.new(Settings.AimbotSmoothness, 0, 1, 0)
+SmoothnessFill.BackgroundColor3 = Color3.fromRGB(128, 0, 128)
+SmoothnessFill.BorderSizePixel = 0
+SmoothnessFill.Parent = SmoothnessSlider
+
+local function updateSmoothness(value)
+    Settings.AimbotSmoothness = value
+    SmoothnessFill.Size = UDim2.new(value, 0, 1, 0)
+    SmoothnessLabel.Text = "Suavidade: " .. tostring(math.floor(value * 100) / 100)
+end
+
+SmoothnessSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        local mousePos = input.Position.X
+        local sliderPos = SmoothnessSlider.AbsolutePosition.X
+        local sliderWidth = SmoothnessSlider.AbsoluteSize.X
+        local percent = math.clamp((mousePos - sliderPos) / sliderWidth, 0, 1)
+        updateSmoothness(percent)
+    end
+end)
+
+-- Slider para ajustar o FOV do Aimbot
+local FOVLabel = Instance.new("TextLabel")
+FOVLabel.Size = UDim2.new(1, 0, 0, 30)
+FOVLabel.Position = UDim2.new(0, 10, 0, 130)
+FOVLabel.Text = "FOV: " .. tostring(Settings.AimbotFOV)
+FOVLabel.Font = Enum.Font.Gotham
+FOVLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+FOVLabel.TextSize = 16
+FOVLabel.BackgroundTransparency = 1
+FOVLabel.Parent = ConfigPanel
+
+local FOVSlider = Instance.new("Frame")
+FOVSlider.Size = UDim2.new(1, -20, 0, 10)
+FOVSlider.Position = UDim2.new(0, 10, 0, 160)
+FOVSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+FOVSlider.BorderSizePixel = 0
+FOVSlider.Parent = ConfigPanel
+
+local FOVFill = Instance.new("Frame")
+FOVFill.Size = UDim2.new(Settings.AimbotFOV / 360, 0, 1, 0)
+FOVFill.BackgroundColor3 = Color3.fromRGB(128, 0, 128)
+FOVFill.BorderSizePixel = 0
+FOVFill.Parent = FOVSlider
+
+local function updateFOV(value)
+    Settings.AimbotFOV = value
+    FOVFill.Size = UDim2.new(value / 360, 0, 1, 0)
+    FOVLabel.Text = "FOV: " .. tostring(math.floor(value))
+end
+
+FOVSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        local mousePos = input.Position.X
+        local sliderPos = FOVSlider.AbsolutePosition.X
+        local sliderWidth = FOVSlider.AbsoluteSize.X
+        local percent = math.clamp((mousePos - sliderPos) / sliderWidth, 0, 1)
+        updateFOV(percent * 360)
+    end
+end)
+
+local FOVCircle = Instance.new("Frame")
+FOVCircle.Size = UDim2.new(0, Settings.AimbotFOV * 2, 0, Settings.AimbotFOV * 2)
+FOVCircle.AnchorPoint = Vector2.new(0.5, 0.5)
+FOVCircle.Position = UDim2.new(0.5, 0, 0.5, 0)
+FOVCircle.BackgroundTransparency = 1
+FOVCircle.BorderSizePixel = 0
+FOVCircle.Parent = FOVCircleGui
+
+local UICornerCircle = Instance.new("UICorner")
+UICornerCircle.CornerRadius = UDim.new(1, 0)
+UICornerCircle.Parent = FOVCircle
+
+local FOVCircleBorder = Instance.new("UIStroke")
+FOVCircleBorder.Color = Color3.fromRGB(128, 0, 128)
+FOVCircleBorder.Thickness = 2
+FOVCircleBorder.Parent = FOVCircle
+
+-- Função para atualizar o círculo de FOV
+local function updateFOVCircle(value)
+    FOVCircle.Size = UDim2.new(0, value * 2, 0, value * 2)
+end
+
+updateFOVCircle(Settings.AimbotFOV)
+
+-- Alternar visibilidade da aba de configuração
+ConfigButton.MouseButton1Click:Connect(function()
+    ConfigPanel.Visible = not ConfigPanel.Visible
+end)
+
 -- Botão Aimbot
 local AimbotButton = Instance.new("TextButton")
-AimbotButton.Size = UDim2.new(0.9, 0, 0, 40)
+AimbotButton.Size = UDim2.new(0.8, 0, 0, 40)
 AimbotButton.Position = UDim2.new(0.05, 0, 0.2, 0)
 AimbotButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 AimbotButton.Text = "Ativar Aimbot"
@@ -110,80 +242,31 @@ AimbotIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem 
 AimbotIcon.BackgroundTransparency = 1
 AimbotIcon.Parent = AimbotButton
 
--- SeekBar para ajustar o FOV do Aimbot
-local AimbotFOVSeekBar = Instance.new("Frame")
-AimbotFOVSeekBar.Size = UDim2.new(0.9, 0, 0, 10)
-AimbotFOVSeekBar.Position = UDim2.new(0.05, 0, 0.3, 0)
-AimbotFOVSeekBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-AimbotFOVSeekBar.BorderSizePixel = 0
-AimbotFOVSeekBar.Parent = Frame
+-- Botão Silent Aim
+local SilentAimButton = Instance.new("TextButton")
+SilentAimButton.Size = UDim2.new(0.9, 0, 0, 40)
+SilentAimButton.Position = UDim2.new(0.05, 0, 0.5, 0)
+SilentAimButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SilentAimButton.Text = "Ativar Silent Aim"
+SilentAimButton.Font = Enum.Font.Gotham
+SilentAimButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SilentAimButton.TextSize = 18
+SilentAimButton.AutoButtonColor = false
+SilentAimButton.Parent = Frame
 
-local AimbotFOVSeekBarFill = Instance.new("Frame")
-AimbotFOVSeekBarFill.Size = UDim2.new(0, 0, 1, 0)
-AimbotFOVSeekBarFill.BackgroundColor3 = Color3.fromRGB(128, 0, 128) -- Roxo
-AimbotFOVSeekBarFill.BorderSizePixel = 0
-AimbotFOVSeekBarFill.Parent = AimbotFOVSeekBar
+-- Ícone do Silent Aim
+local SilentAimIcon = Instance.new("ImageLabel")
+SilentAimIcon.Size = UDim2.new(0, 24, 0, 24)
+SilentAimIcon.Position = UDim2.new(0.05, 0, 0.5, -12)
+SilentAimIcon.Image = "rbxassetid://1234567890" -- Substitua pelo ID de uma imagem de ícone
+SilentAimIcon.BackgroundTransparency = 1
+SilentAimIcon.Parent = SilentAimButton
 
-local AimbotFOVSeekBarThumb = Instance.new("TextButton")
-AimbotFOVSeekBarThumb.Size = UDim2.new(0, 20, 0, 20)
-AimbotFOVSeekBarThumb.BackgroundColor3 = Color3.fromRGB(128, 0, 128) -- Roxo
-AimbotFOVSeekBarThumb.BorderSizePixel = 0
-AimbotFOVSeekBarThumb.Text = ""
-AimbotFOVSeekBarThumb.Parent = AimbotFOVSeekBar
-
--- Criação de uma nova ScreenGui para o Círculo de FOV
-local FOVCircleGui = Instance.new("ScreenGui")
-FOVCircleGui.Name = "FOVCircleGui"
-FOVCircleGui.Parent = game.CoreGui
-
--- Criação do Círculo de FOV
-local FOVCircle = Instance.new("Frame")
-FOVCircle.Size = UDim2.new(0, Settings.AimbotFOV * 2, 0, Settings.AimbotFOV * 2)
-FOVCircle.AnchorPoint = Vector2.new(0.5, 0.5) -- Centraliza o círculo
-FOVCircle.Position = UDim2.new(0.5, 0, 0.5, 0) -- Posiciona no centro da tela
-FOVCircle.BackgroundTransparency = 1
-FOVCircle.BorderSizePixel = 0
-FOVCircle.Parent = FOVCircleGui
-
-local UICornerCircle = Instance.new("UICorner")
-UICornerCircle.CornerRadius = UDim.new(1, 0)
-UICornerCircle.Parent = FOVCircle
-
-local FOVCircleBorder = Instance.new("UIStroke")
-FOVCircleBorder.Color = Color3.fromRGB(128, 0, 128) -- Roxo
-FOVCircleBorder.Thickness = 2
-FOVCircleBorder.Parent = FOVCircle
-
--- Função para atualizar o FOV do Aimbot e o círculo de FOV
-local function updateAimbotFOV(value)
-    Settings.AimbotFOV = value
-    AimbotFOVSeekBarFill.Size = UDim2.new(value / 360, 0, 1, 0)
-    AimbotFOVSeekBarThumb.Position = UDim2.new(value / 360, -10, 0.5, -10)
-    print("FOV do Aimbot ajustado para: " .. tostring(value))
-
-    -- Atualiza o círculo de FOV
-    FOVCircle.Size = UDim2.new(0, value * 2, 0, value * 2)
-end
-
--- Inicializa o FOV
-updateAimbotFOV(Settings.AimbotFOV)
-
--- Função para ajustar o FOV com a SeekBar
-AimbotFOVSeekBarThumb.MouseButton1Down:Connect(function()
-    local connection
-    connection = RunService.RenderStepped:Connect(function()
-        local mouse = Players.LocalPlayer:GetMouse()
-        local x = math.clamp(mouse.X - AimbotFOVSeekBar.AbsolutePosition.X, 0, AimbotFOVSeekBar.AbsoluteSize.X)
-        local value = (x / AimbotFOVSeekBar.AbsoluteSize.X) * 360
-        updateAimbotFOV(value)
-    end)
-
-    local function disconnect()
-        connection:Disconnect()
-    end
-
-    AimbotFOVSeekBarThumb.MouseButton1Up:Connect(disconnect)
-    AimbotFOVSeekBarThumb.MouseLeave:Connect(disconnect)
+-- Função para ativar/desativar o Silent Aim
+SilentAimButton.MouseButton1Click:Connect(function()
+    Settings.SilentAimEnabled = not Settings.SilentAimEnabled
+    SilentAimButton.Text = Settings.SilentAimEnabled and "Desativar Silent Aim" or "Ativar Silent Aim"
+    print("Silent Aim " .. (Settings.SilentAimEnabled and "ativado!" or "desativado!"))
 end)
 
 -- Botão ESP
@@ -250,10 +333,6 @@ DestroyIcon.Parent = DestroyButton
 local function createHoverEffect(button)
     button.MouseEnter:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)}):Play()
-    end)
-
-    button.MouseLeave:Connect(function()
-        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
     end)
 end
 
@@ -323,6 +402,54 @@ local function getClosestPlayer()
     return closestPlayer
 end
 
+-- Função para obter o jogador mais próximo dentro do FOV do Silent Aim
+local function getClosestPlayerForSilentAim()
+    local closestPlayer = nil
+    local closestDistance = Settings.AimbotFOV
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            -- Verifica se o jogador é da mesma equipe
+            if Settings.SilentAimTeamCheck and player.Team == LocalPlayer.Team then
+                continue
+            end
+
+            -- Calcula a distância entre o jogador e o centro da tela
+            local headPosition = player.Character.Head.Position
+            local screenPosition, onScreen = Camera:WorldToViewportPoint(headPosition)
+
+            if onScreen then
+                local distance = getDistance(Vector2.new(screenPosition.X, screenPosition.Y), Vector2.new(Mouse.X, Mouse.Y))
+
+                if distance < closestDistance then
+                    closestPlayer = player
+                    closestDistance = distance
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+-- Função para ajustar o tiro silenciosamente
+local function silentAimAt(target)
+    if not target or not target.Character or not target.Character:FindFirstChild("Head") then
+        return
+    end
+
+    -- Obtém a posição da parte-alvo (ex.: cabeça)
+    local targetPart = target.Character.Head
+    local targetPosition = targetPart.Position
+
+    -- Simula o tiro diretamente no alvo
+    local cameraPosition = Camera.CFrame.Position
+    local direction = (targetPosition - cameraPosition).Unit
+
+    -- Ajusta a mira silenciosamente
+    Camera.CFrame = CFrame.new(cameraPosition, targetPosition)
+end
+
 -- Função para ajustar a mira suavemente
 local function aimAt(target)
     if not target or not target.Character or not target.Character:FindFirstChild("Head") then
@@ -352,6 +479,17 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- Conectar o Silent Aim ao clique do mouse
+UserInputService.InputBegan:Connect(function(input)
+    if input.UserInputType == Settings.AimbotKey and Settings.SilentAimEnabled then
+        local closestPlayer = getClosestPlayerForSilentAim()
+
+        if closestPlayer then
+            silentAimAt(closestPlayer)
+        end
+    end
+end)
+
 -- Função para ativar/desativar o Aimbot
 local function toggleAimbot()
     Settings.AimbotEnabled = not Settings.AimbotEnabled
@@ -362,63 +500,45 @@ end
 -- Botão Aimbot
 AimbotButton.MouseButton1Click:Connect(toggleAimbot)
 
--- Função ESP (Box ESP) - Afeta apenas os outros jogadores
-local espEnabled = Settings.EspEnabled
-local espBoxes = {}
+-- Função ESP (NameTag ESP)
+local espEnabled = false
+local espNameTags = {}
 
-local function createESPBox(player)
-    if not player.Character then return end
+local function createESPNameTag(player)
+    if not player.Character or not player.Character:FindFirstChild("Head") then return end
 
-    local boxes = {}
-    if Settings.EspShowHead and player.Character:FindFirstChild("Head") then
-        local box = Instance.new("BoxHandleAdornment")
-        box.Adornee = player.Character.Head
-        box.Size = player.Character.Head.Size + Settings.EspSizeOffset
-        box.Color3 = Settings.EspColor
-        box.Transparency = Settings.EspTransparency
-        box.AlwaysOnTop = true
-        box.ZIndex = 5
-        box.Parent = player.Character.Head
-        table.insert(boxes, box)
+    -- Verifica se o jogador é da mesma equipe
+    if Settings.AimbotTeamCheck and player.Team == LocalPlayer.Team then
+        return
     end
 
-    if Settings.EspShowTorso and player.Character:FindFirstChild("Torso") then
-        local box = Instance.new("BoxHandleAdornment")
-        box.Adornee = player.Character.Torso
-        box.Size = player.Character.Torso.Size + Settings.EspSizeOffset
-        box.Color3 = Settings.EspColor
-        box.Transparency = Settings.EspTransparency
-        box.AlwaysOnTop = true
-        box.ZIndex = 5
-        box.Parent = player.Character.Torso
-        table.insert(boxes, box)
-    end
+    -- Cria um TextLabel para o NameTag
+    local nameTag = Instance.new("BillboardGui")
+    nameTag.Name = "NameTag"
+    nameTag.Size = UDim2.new(0, 20, 0, 10) -- Tamanho do NameTag
+    nameTag.StudsOffset = Vector3.new(0, 2, 0) -- Posiciona acima da cabeça
+    nameTag.AlwaysOnTop = true
+    nameTag.Adornee = player.Character.Head
+    nameTag.Parent = player.Character.Head
 
-    if Settings.EspShowLimbs then
-        for _, limb in pairs(player.Character:GetChildren()) do
-            if limb:IsA("BasePart") and (limb.Name == "Left Arm" or limb.Name == "Right Arm" or limb.Name == "Left Leg" or limb.Name == "Right Leg") then
-                local box = Instance.new("BoxHandleAdornment")
-                box.Adornee = limb
-                box.Size = limb.Size + Settings.EspSizeOffset
-                box.Color3 = Settings.EspColor
-                box.Transparency = Settings.EspTransparency
-                box.AlwaysOnTop = true
-                box.ZIndex = 5
-                box.Parent = limb
-                table.insert(boxes, box)
-            end
-        end
-    end
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.fromRGB(165, 42, 42) -- Cor do texto (branco)
+    textLabel.TextStrokeTransparency = 0.5 -- Contorno do texto
+    textLabel.TextScaled = true
+    textLabel.Text = player.Name -- Exibe o nome do jogador
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.Parent = nameTag
 
-    espBoxes[player] = boxes
+    -- Armazena o NameTag para remoção posterior
+    espNameTags[player] = nameTag
 end
 
-local function removeESPBox(player)
-    if espBoxes[player] then
-        for _, box in pairs(espBoxes[player]) do
-            box:Destroy()
-        end
-        espBoxes[player] = nil
+local function removeESPNameTag(player)
+    if espNameTags[player] then
+        espNameTags[player]:Destroy()
+        espNameTags[player] = nil
     end
 end
 
@@ -426,22 +546,36 @@ ESPButton.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
     ESPButton.Text = espEnabled and "Desativar ESP" or "Ativar ESP"
     if espEnabled then
-        print("ESP ativado!")
+        print("ESP NameTag ativado!")
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then
-                createESPBox(player)
+                createESPNameTag(player)
             end
         end
     else
-        print("ESP desativado!")
-        for player, _ in pairs(espBoxes) do
-            removeESPBox(player)
+        print("ESP NameTag desativado!")
+        for player, _ in pairs(espNameTags) do
+            removeESPNameTag(player)
         end
     end
 end)
 
+-- Detectar quando novos jogadores entram no jogo
+Players.PlayerAdded:Connect(function(player)
+    if espEnabled and player ~= LocalPlayer then
+        createESPNameTag(player)
+    end
+end)
+
+-- Detectar quando jogadores saem do jogo
+Players.PlayerRemoving:Connect(function(player)
+    if espNameTags[player] then
+        removeESPNameTag(player)
+    end
+end)
+
 -- Função Hitbox Expansion
-local hitboxEnabled = Settings.HitboxExpansionEnabled
+local hitboxEnabled = false
 local hitboxExpanders = {}
 
 local function createHitboxExpander(player)
@@ -450,9 +584,9 @@ local function createHitboxExpander(player)
     local RootPart = player.Character.HumanoidRootPart
     local HitboxExpander = Instance.new("Part")
     HitboxExpander.Name = "HitboxExpander"
-    HitboxExpander.Size = Settings.HitboxSize
-    HitboxExpander.Color = Settings.HitboxColor.Color
-    HitboxExpander.Transparency = Settings.HitboxTransparency
+    HitboxExpander.Size = Vector3.new(10, 10, 10) -- Tamanho da hitbox expandida
+    HitboxExpander.Color = Color3.fromRGB(255, 0, 0)
+    HitboxExpander.Transparency = 0.5
     HitboxExpander.CanCollide = true
     HitboxExpander.Anchored = false
     HitboxExpander.Massless = true
@@ -499,8 +633,8 @@ local function destroyScript()
     hitboxEnabled = false
 
     -- Remove todos os ESPs
-    for player, _ in pairs(espBoxes) do
-        removeESPBox(player)
+    for player, _ in pairs(espNameTags) do
+        removeESPNameTag(player)
     end
 
     -- Remove todas as hitboxes expandidas
