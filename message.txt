@@ -6,7 +6,7 @@ local Settings = {
     -- Aimbot
     AimbotEnabled = false, -- Ativar/desativar o Aimbot
     AimbotKey = Enum.UserInputType.MouseButton2, -- Botão para ativar o Aimbot (Botão direito do mouse)
-    AimbotSmoothness = 0.2, -- Suavidade do Aimbot (0 = instantâneo, 1 = muito lento)
+    AimbotSmoothness = 0.1, -- Suavidade do Aimbot (0 = instantâneo, 1 = muito lento)
     AimbotFOV = 100, -- Campo de visão do Aimbot (em graus)
     AimbotTeamCheck = true, -- Ignorar membros da mesma equipe
 
