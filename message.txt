@@ -22,8 +22,8 @@ local Settings = {
 
 -- CONFIGURAÇÕES DE LOGIN
 local LoginSettings = {
-    Username = "admin", -- Nome de usuário correto
-    Password = "12345", -- Senha correta
+    Username = "wgxzs", -- Nome de usuário correto
+    Password = "ddloko00", -- Senha correta
 }
 
 -- Verifica se o jogo é Counter Blox Source 2
@@ -179,17 +179,63 @@ LoginButton.MouseLeave:Connect(function()
     TweenService:Create(LoginButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(128, 0, 128)}):Play()
 end)
 
+-- Função para criar notificações
+local function createNotification(message, color)
+    -- Cria o frame da notificação
+    local Notification = Instance.new("Frame")
+    Notification.Size = UDim2.new(0, 250, 0, 50)
+    Notification.Position = UDim2.new(1, -270, 1, -70) -- Canto inferior direito
+    Notification.BackgroundColor3 = color or Color3.fromRGB(255, 0, 0)
+    Notification.BorderSizePixel = 0
+    Notification.Parent = ScreenGui
+
+    -- Borda arredondada
+    local UICornerNotification = Instance.new("UICorner")
+    UICornerNotification.CornerRadius = UDim.new(0, 8)
+    UICornerNotification.Parent = Notification
+
+    -- Texto da notificação
+    local NotificationLabel = Instance.new("TextLabel")
+    NotificationLabel.Size = UDim2.new(1, 0, 1, 0)
+    NotificationLabel.Text = message
+    NotificationLabel.Font = Enum.Font.Gotham
+    NotificationLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    NotificationLabel.TextSize = 14
+    NotificationLabel.BackgroundTransparency = 1
+    NotificationLabel.TextXAlignment = Enum.TextXAlignment.Center
+    NotificationLabel.TextYAlignment = Enum.TextYAlignment.Center
+    NotificationLabel.Parent = Notification
+
+    -- Animação de entrada
+    Notification.Position = UDim2.new(1, 0, 1, -70) -- Fora da tela
+    TweenService:Create(Notification, TweenInfo.new(0.3), {Position = UDim2.new(1, -270, 1, -70)}):Play()
+
+    -- Desaparecer após 3 segundos
+    wait(3)
+    TweenService:Create(Notification, TweenInfo.new(0.3), {Position = UDim2.new(1, 0, 1, -70)}):Play()
+    wait(0.3)
+    Notification:Destroy()
+end
+
 -- Função para verificar o login
 LoginButton.MouseButton1Click:Connect(function()
-    local username = UsernameBox.Text
-    local password = PasswordBox.Text
+    local username = UsernameBox.Text:gsub("%s+", "") -- Remove espaços extras
+    local password = PasswordBox.Text:gsub("%s+", "") -- Remove espaços extras
 
+    -- Validar entrada
+    if username == "" or password == "" then
+        createNotification("Preencha todos os campos!", Color3.fromRGB(255, 0, 0))
+        return
+    end
+
+    -- Verificar credenciais
     if username == LoginSettings.Username and password == LoginSettings.Password then
-        print("Login bem-sucedido!")
-        LoginFrame.Visible = false
-        Frame.Visible = true
+        createNotification("Login bem-sucedido!", Color3.fromRGB(0, 255, 0))
+        wait(1)
+        LoginFrame.Visible = false -- Oculta o formulário de login
+         Frame.Visible = true
     else
-        warn("Credenciais inválidas. Tente novamente.")
+        createNotification("Credenciais inválidas. Tente novamente.", Color3.fromRGB(255, 0, 0))
     end
 end)
 -- Botões Principais
