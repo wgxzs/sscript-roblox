@@ -11,9 +11,19 @@ local Settings = {
     AimbotFOV = 100, -- Campo de visão do Aimbot (em graus)
     AimbotTeamCheck = true, -- Ignorar membros da mesma equipe
 
+    -- Silent Aim
+    SilentAimEnabled = false, -- Ativar/Desativar o Silent Aim
+    SilentAimKey = Enum.UserInputType.MouseButton1, -- Botão para ativar o Silent Aim (Botão esquerdo do mouse)
+
     -- Interface Gráfica
     GuiEnabled = true, -- Ativar/desativar a interface gráfica
     GuiKeyToToggle = Enum.KeyCode.Zero, -- Tecla para ativar/desativar a GUI
+}
+
+-- CONFIGURAÇÕES DE LOGIN
+local LoginSettings = {
+    Username = "admin", -- Nome de usuário correto
+    Password = "12345", -- Senha correta
 }
 
 -- Verifica se o jogo é Counter Blox Source 2
@@ -42,13 +52,15 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Wgxzs Team"
 ScreenGui.Parent = game.CoreGui
 
+-- Frame Principal
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 350, 0, 450) -- Aumentei o tamanho para acomodar a SeekBar
+Frame.Size = UDim2.new(0, 350, 0, 450)
 Frame.Position = UDim2.new(0.5, -175, 0.5, -225)
-Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Fundo preto
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Frame.BackgroundTransparency = 0.2
 Frame.BorderSizePixel = 0
 Frame.ClipsDescendants = true
+Frame.Visible = false -- Inicialmente oculto até o login ser feito
 Frame.Parent = ScreenGui
 
 -- Borda arredondada
@@ -71,10 +83,143 @@ Title.Parent = Frame
 local Divider = Instance.new("Frame")
 Divider.Size = UDim2.new(0.9, 0, 0, 1)
 Divider.Position = UDim2.new(0.05, 0, 0, 60)
-Divider.BackgroundColor3 = Color3.fromRGB(128, 0, 128) -- Roxo
+Divider.BackgroundColor3 = Color3.fromRGB(128, 0, 128)
 Divider.BackgroundTransparency = 0.8
 Divider.BorderSizePixel = 0
 Divider.Parent = Frame
+
+-- Interface de Login
+local LoginFrame = Instance.new("Frame")
+LoginFrame.Size = UDim2.new(0, 350, 0, 400) -- Tamanho maior para melhor organização
+LoginFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
+LoginFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Cor de fundo mais suave
+LoginFrame.BackgroundTransparency = 0.1 -- Transparência leve
+LoginFrame.BorderSizePixel = 0
+LoginFrame.ClipsDescendants = true
+LoginFrame.Parent = ScreenGui
+
+-- Borda arredondada para o frame de login
+local UICornerLogin = Instance.new("UICorner")
+UICornerLogin.CornerRadius = UDim.new(0, 12)
+UICornerLogin.Parent = LoginFrame
+
+-- Título do Login
+local LoginTitle = Instance.new("TextLabel")
+LoginTitle.Size = UDim2.new(1, 0, 0, 60)
+LoginTitle.Text = "LOGIN"
+LoginTitle.Font = Enum.Font.GothamBold
+LoginTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoginTitle.TextSize = 32
+LoginTitle.BackgroundTransparency = 1
+LoginTitle.Position = UDim2.new(0, 0, 0, 20)
+LoginTitle.TextXAlignment = Enum.TextXAlignment.Center
+LoginTitle.Parent = LoginFrame
+
+-- Campo de Usuário
+local UsernameBox = Instance.new("TextBox")
+UsernameBox.Size = UDim2.new(0.8, 0, 0, 40)
+UsernameBox.Position = UDim2.new(0.1, 0, 0.35, 0)
+UsernameBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Cor mais suave
+UsernameBox.PlaceholderText = "Usuário" -- Placeholder em vez de texto fixo
+UsernameBox.Font = Enum.Font.Gotham
+UsernameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+UsernameBox.TextSize = 16
+UsernameBox.ClearTextOnFocus = true
+UsernameBox.Parent = LoginFrame
+
+-- Borda arredondada para o campo de usuário
+local UICornerUsername = Instance.new("UICorner")
+UICornerUsername.CornerRadius = UDim.new(0, 8)
+UICornerUsername.Parent = UsernameBox
+
+-- Campo de Senha
+local PasswordBox = Instance.new("TextBox")
+PasswordBox.Size = UDim2.new(0.8, 0, 0, 40)
+PasswordBox.Position = UDim2.new(0.1, 0, 0.5, 0)
+PasswordBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Cor mais suave
+PasswordBox.PlaceholderText = "Senha" -- Placeholder em vez de texto fixo
+PasswordBox.Font = Enum.Font.Gotham
+PasswordBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+PasswordBox.TextSize = 16
+PasswordBox.ClearTextOnFocus = true
+PasswordBox.TextEditable = true
+PasswordBox.TextTransparency = 0
+PasswordBox.TextXAlignment = Enum.TextXAlignment.Center
+PasswordBox.TextYAlignment = Enum.TextYAlignment.Center
+PasswordBox.Parent = LoginFrame
+
+-- Borda arredondada para o campo de senha
+local UICornerPassword = Instance.new("UICorner")
+UICornerPassword.CornerRadius = UDim.new(0, 8)
+UICornerPassword.Parent = PasswordBox
+
+-- Botão de Login
+local LoginButton = Instance.new("TextButton")
+LoginButton.Size = UDim2.new(0.8, 0, 0, 40)
+LoginButton.Position = UDim2.new(0.1, 0, 0.65, 0)
+LoginButton.BackgroundColor3 = Color3.fromRGB(128, 0, 128) -- Cor roxa para destaque
+LoginButton.Text = "ENTRAR"
+LoginButton.Font = Enum.Font.GothamBold
+LoginButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoginButton.TextSize = 18
+LoginButton.AutoButtonColor = false
+LoginButton.Parent = LoginFrame
+
+-- Borda arredondada para o botão de login
+local UICornerLoginButton = Instance.new("UICorner")
+UICornerLoginButton.CornerRadius = UDim.new(0, 8)
+UICornerLoginButton.Parent = LoginButton
+
+-- Efeito de hover no botão de login
+LoginButton.MouseEnter:Connect(function()
+    TweenService:Create(LoginButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(150, 0, 150)}):Play()
+end)
+
+LoginButton.MouseLeave:Connect(function()
+    TweenService:Create(LoginButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(128, 0, 128)}):Play()
+end)
+
+-- Função para verificar o login
+LoginButton.MouseButton1Click:Connect(function()
+    local username = UsernameBox.Text
+    local password = PasswordBox.Text
+
+    if username == LoginSettings.Username and password == LoginSettings.Password then
+        print("Login bem-sucedido!")
+        LoginFrame.Visible = false
+        Frame.Visible = true
+    else
+        warn("Credenciais inválidas. Tente novamente.")
+    end
+end)
+-- Botões Principais
+local ButtonYOffset = 0.2 -- Posição inicial dos botões
+local ButtonSpacing = 0.1 -- Espaçamento entre os botões
+
+-- Função para criar botões
+local function createButton(name, positionY, callback)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0.9, 0, 0, 40)
+    button.Position = UDim2.new(0.05, 0, positionY, 0)
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.Text = name
+    button.Font = Enum.Font.Gotham
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextSize = 18
+    button.AutoButtonColor = false
+    button.Parent = Frame
+
+    -- Efeito de hover
+    button.MouseEnter:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)}):Play()
+    end)
+    button.MouseLeave:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}):Play()
+    end)
+
+    -- Conectar a função de callback
+    button.MouseButton1Click:Connect(callback)
+end
 
 -- Botão "+"
 local ConfigButton = Instance.new("TextButton")
