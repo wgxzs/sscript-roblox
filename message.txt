@@ -22,8 +22,8 @@ local Settings = {
 
 -- CONFIGURAÇÕES DE LOGIN
 local LoginSettings = {
-    Username = "d", -- Nome de usuário correto
-    Password = "d", -- Senha correta
+    Username = "wgxzs", -- Nome de usuário correto
+    Password = "ddloko00", -- Senha correta
 }
 
 -- Verifica se o jogo é Counter Blox Source 2
